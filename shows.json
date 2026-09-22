@@ -1,0 +1,48 @@
+{
+  "_comment": [
+    "Shows the picker pulls from. Edit this file to add or drop shows.",
+    "bucket: 'news' = must be published within 5 days; 'standard' = within 30 days.",
+    "favorite: true = Brent already follows it; only a standout episode should be picked.",
+    "apple_id / feed_url: leave null and run 'python3 fetch_candidates.py --resolve'",
+    "to fill them in automatically, then commit the updated file."
+  ],
+  "shows": [
+    {"name": "The Daily (NYT)", "bucket": "news", "favorite": true, "apple_id": null, "feed_url": null},
+    {"name": "The Indicator from Planet Money", "bucket": "news", "favorite": false, "apple_id": null, "feed_url": null},
+    {"name": "Prof G Markets", "bucket": "news", "favorite": false, "apple_id": null, "feed_url": null},
+    {"name": "The AI Daily Brief", "bucket": "news", "favorite": false, "apple_id": null, "feed_url": null},
+
+    {"name": "Big Technology Podcast", "bucket": "standard", "favorite": true, "apple_id": null, "feed_url": null},
+    {"name": "Hard Fork", "bucket": "standard", "favorite": false, "apple_id": null, "feed_url": null},
+    {"name": "Dwarkesh Podcast", "bucket": "standard", "favorite": false, "apple_id": null, "feed_url": null},
+    {"name": "The Logan Bartlett Show", "bucket": "standard", "favorite": false, "apple_id": null, "feed_url": null},
+    {"name": "The Twenty Minute VC (20VC)", "bucket": "standard", "favorite": false, "apple_id": null, "feed_url": null},
+    {"name": "Cheeky Pint", "bucket": "standard", "favorite": false, "apple_id": null, "feed_url": null},
+    {"name": "AI and I", "bucket": "standard", "favorite": false, "apple_id": null, "feed_url": null},
+
+    {"name": "Acquired", "bucket": "standard", "favorite": true, "apple_id": null, "feed_url": null},
+    {"name": "My First Million", "bucket": "standard", "favorite": true, "apple_id": null, "feed_url": null},
+    {"name": "The Knowledge Project with Shane Parrish", "bucket": "standard", "favorite": false, "apple_id": null, "feed_url": null},
+    {"name": "We Study Billionaires - The Investor's Podcast Network", "bucket": "standard", "favorite": false, "apple_id": null, "feed_url": null},
+    {"name": "In Good Company with Nicolai Tangen", "bucket": "standard", "favorite": false, "apple_id": null, "feed_url": null},
+    {"name": "The Startup Ideas Podcast", "bucket": "standard", "favorite": false, "apple_id": null, "feed_url": null},
+    {"name": "Invest Like the Best with Patrick O'Shaughnessy", "bucket": "standard", "favorite": false, "apple_id": null, "feed_url": null},
+    {"name": "Founders", "bucket": "standard", "favorite": false, "apple_id": null, "feed_url": null},
+    {"name": "Lenny's Podcast", "bucket": "standard", "favorite": false, "apple_id": null, "feed_url": null},
+
+    {"name": "All the Hacks with Chris Hutchins", "bucket": "standard", "favorite": true, "apple_id": null, "feed_url": null},
+    {"name": "Money For Couples with Ramit Sethi", "bucket": "standard", "favorite": false, "apple_id": null, "feed_url": null},
+    {"name": "Let's Get To The Points", "bucket": "standard", "favorite": false, "apple_id": null, "feed_url": null},
+    {"name": "ChooseFI", "bucket": "standard", "favorite": false, "apple_id": null, "feed_url": null},
+
+    {"name": "The Tim Ferriss Show", "bucket": "standard", "favorite": true, "apple_id": null, "feed_url": null},
+    {"name": "The Prof G Pod with Scott Galloway", "bucket": "standard", "favorite": false, "apple_id": null, "feed_url": null},
+    {"name": "Pivot", "bucket": "standard", "favorite": false, "apple_id": null, "feed_url": null},
+
+    {"name": "The BEMA Podcast", "bucket": "standard", "favorite": false, "apple_id": null, "feed_url": null},
+    {"name": "BibleProject", "bucket": "standard", "favorite": false, "apple_id": null, "feed_url": null},
+
+    {"name": "The Peter Attia Drive", "bucket": "standard", "favorite": false, "apple_id": null, "feed_url": null},
+    {"name": "Huberman Lab", "bucket": "standard", "favorite": false, "apple_id": null, "feed_url": null}
+  ]
+}

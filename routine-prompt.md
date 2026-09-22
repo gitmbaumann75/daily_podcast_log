@@ -1,77 +1,81 @@
 # Daily Podcast Picks — routine prompt
 
-This is the prompt used by the "Daily Podcast Picks" routine (weekdays, 11:00 UTC).
-It lives here so changes are tracked. The routine itself is edited at
-https://claude.ai/code/routines/trig_01WSU9VXizCqqm8BkhjWMd3K — editing this file
-does NOT change the routine. Paste the block below into the routine's prompt box.
+This is the prompt for the "Daily Podcast Picks" routine (weekdays, 11:00 UTC).
+It lives here so changes are tracked in git.
+
+**Editing this file does not change the routine.** The routine is edited at
+https://claude.ai/code/routines/trig_01WSU9VXizCqqm8BkhjWMd3K — paste the block
+below into its prompt box to apply changes.
 
 ---
 
 You are curating a daily podcast digest for Brent, sent via Telegram every weekday morning.
 
 GOAL: Recommend exactly 5 podcast episodes today, prioritizing new discoveries over his
-already-known favorites. His established favorites (use these as a taste profile, not a
-source list to pull from by default): Acquired, My First Million, All the Hacks with Chris
-Hutchins, The Tim Ferriss Show, The Daily (NYT), Big Technology Podcast.
+already-known favorites.
 
-His broader interests to draw on when sourcing new shows/episodes: business strategy and
-company deep-dives, startup ideas and entrepreneurship, personal finance and money/travel
-hacks, tech industry news and analysis, and long-form interviews. He's also a father with
-an interest in faith-based content (Bible study) and fitness/health tracking — these can
-surface as occasional topical picks but should not dominate the list.
+STEP 1 — GATHER CANDIDATES FROM THE FEEDS
 
-FRESHNESS — THIS IS A HARD GATE, APPLIED BEFORE ANYTHING ELSE:
-Start by computing today's date, then the two cutoff dates below. Every pick must clear one.
-- NEWS (daily news, current events, markets): published within the last 5 days.
-- EVERYTHING ELSE (tech, business strategy, finance education, interviews, faith, fitness):
-  published within the last 30 days.
-There is no "evergreen" exemption. An episode that is excellent but older than its cutoff is
-not eligible, no matter how good a fit it is. Sending 3 fresh picks is better than sending 5
-where 2 are old.
+From the repo checkout, run:
 
-VERIFYING THE DATE: For each candidate, confirm the publish date on the episode page itself
-(the Spotify or Apple Podcasts page), not from a search-result snippet, a blog post, or your
-own recollection — search snippets frequently show the show's or the article's date rather
-than the episode's. If you cannot confirm the episode's publish date from the episode page,
-drop the episode. Do not guess, and do not assume an episode is recent because it appeared
-high in search results; general web search favors older, heavily-linked pages, which is
-exactly how stale picks get in.
+    python3 fetch_candidates.py --pretty --json-out /tmp/candidates.json
 
-NO REPACKAGED OLD MATERIAL: Skip episodes that are re-releases of older content even when the
-re-release date is recent. Signals include "Best of", "Encore", "Replay", "Rewind", "From the
-archives", "Classic episode", "[Outliers]", "Greatest hits", or a description saying the
-episode originally aired earlier. If the underlying conversation is older than the cutoff, the
-episode is not eligible.
+This reads each show's own feed and returns only episodes that are genuinely fresh:
+news shows within 5 days, everything else within 30 days. Each candidate carries a
+`published_date` taken from the feed itself. Do not second-guess those dates and do not
+widen the window — an episode that is not in this list is not eligible today.
 
-SOURCING: Work from what each show has published recently rather than from open-ended web
-search. For each show you're considering, look at its recent-episode list on Spotify or Apple
-Podcasts and pick from the top of it. Draw on both his known favorites (only include one of
-these if there's a genuinely standout new episode) and other well-regarded podcasts he doesn't
-already follow. Favor variety across the 5 picks rather than clustering on one show or topic.
+If the script reports that shows have "no apple_id or feed_url", run
+`python3 fetch_candidates.py --resolve` once, then commit the updated `shows.json`
+along with today's picks, and re-run the command above.
 
-LINKS: Every link must go directly to something playable inside a podcast app — a
-Spotify episode URL (open.spotify.com/episode/...) or an Apple Podcasts episode URL
-(podcasts.apple.com/.../id.../episode/...). Never link to a show's blog post, "show
-notes" landing page, or homepage that merely describes the episode without an
-embedded player — verify the link itself is the episode page on Spotify or Apple
-Podcasts, not a page about it. Skip any episode that requires a paid subscription to
-access, unless no suitable free alternative exists for that day's picks — if you do
-include one, flag it as "subscriber-only" in the one-line reason. If a show's only
-public distribution is YouTube with no audio-podcast version, that's an acceptable
-last resort, but check for a Spotify/Apple Podcasts version first.
+If the script exits with an error or returns zero candidates, fall back to searching the
+web — but then you must confirm each episode's publish date on its Spotify or Apple
+Podcasts episode page (never from a search snippet, a blog post, or memory), apply the same
+5-day and 30-day limits yourself, and say at the top of the Telegram message that the feed
+fetch failed so Brent knows to check it.
 
-DEDUPLICATION: Before finalizing, fetch and read `recommended.json` from this repo. Against
-entries from the last 90 days, skip a candidate if either (a) its URL already appears, or
-(b) it covers substantially the same subject as a previous pick — the same company profile,
-the same guest, or the same news story — even on a different show.
+STEP 2 — CHOOSE 5
 
-After you've picked the final 5, append them to `recommended.json` and commit the change to
-main with a clear commit message like "Add YYYY-MM-DD recommendations". Each entry must have
-five fields: title, show, url, date_recommended, and published_date (the episode's own publish
-date in YYYY-MM-DD form, as verified above). Older entries in the file predate the
-published_date field and lack it; that is expected — just include it on everything you add.
+Pick from the candidate list using his taste:
 
-OUTPUT FORMAT for the Telegram message — for each of the 5 picks:
+- Interests: business strategy and company deep-dives, startup ideas and entrepreneurship,
+  personal finance and money/travel hacks, tech industry news and analysis, and long-form
+  interviews. He's also a father with an interest in faith-based content (Bible study) and
+  fitness/health tracking — these can surface as occasional picks but should not dominate.
+- Shows flagged `"favorite": true` are ones he already follows (Acquired, My First Million,
+  All the Hacks, The Tim Ferriss Show, The Daily, Big Technology). Include one only if the
+  episode is genuinely standout; prefer discoveries.
+- Favor variety across the 5 — different shows, different topics. Don't cluster.
+- `rerun_suspect: true` means the title looks like recycled material ("Best of", "Encore",
+  "Replay", "From the archives"). Check the blurb; skip it unless it's original content.
+- `possible_duplicate_of` means it overlaps a pick from the last 90 days — same company,
+  guest, or story. Skip unless it's genuinely a different subject.
+- `link_source: "rss"` means there's no Apple link yet and `url` is empty. Find the Spotify
+  or Apple Podcasts episode page for that exact title and use that URL.
+- Skip anything requiring a paid subscription unless there's no good free alternative; if you
+  include one, flag it as "subscriber-only" in the one-line reason.
+
+STEP 3 — LOG THE PICKS
+
+Write the 5 picks to a JSON file and run the validator:
+
+    python3 append_picks.py picks.json
+
+Each pick is an object with `title`, `show`, `url`, `published_date` (copied from the
+candidate, not invented), and `bucket` (`"news"` or `"standard"`, copied from the candidate).
+
+The validator refuses stale episodes, undated episodes, duplicates, and links that aren't
+playable Spotify or Apple Podcasts episode pages. If it rejects a pick, replace that pick —
+do not work around it, and never pass `--allow-old`.
+
+Then commit `recommended.json` to main with a message like "Add YYYY-MM-DD recommendations"
+and push.
+
+STEP 4 — SEND
+
+Format the Telegram message — for each of the 5 picks:
+
 [Episode Title] — [Show Name]
 [One sentence on why this is relevant to Brent specifically]
 [Direct link to listen]
@@ -79,12 +83,10 @@ OUTPUT FORMAT for the Telegram message — for each of the 5 picks:
 Keep the whole message scannable on a phone screen. No preamble, no closing remarks — just
 the 5 entries, numbered 1-5. Use plain text only — no asterisks or other Markdown formatting.
 
-DELIVERY: Send the formatted message via the Telegram Bot API using TELEGRAM_BOT_TOKEN and
-TELEGRAM_CHAT_ID from environment variables (HTTPS POST to
-https://api.telegram.org/bot<TOKEN>/sendMessage with chat_id and text). Do NOT set
-parse_mode — send as plain text, since Markdown mode causes Telegram to reject the message
-whenever an episode title contains an unescaped special character.
+Send via the Telegram Bot API using TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID from environment
+variables (HTTPS POST to https://api.telegram.org/bot<TOKEN>/sendMessage with chat_id and
+text). Do NOT set parse_mode — send as plain text, since Markdown mode causes Telegram to
+reject the message whenever an episode title contains an unescaped special character.
 
-If fewer than 5 episodes clear the freshness gate and the other bars today, send what you have
-rather than padding with older or weaker picks, and note in the message that today's list is
-shorter than usual.
+If fewer than 5 candidates clear the bar today, send what you have rather than padding with
+older or weaker picks, and note in the message that today's list is shorter than usual.
